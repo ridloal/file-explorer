@@ -1,13 +1,23 @@
 import { defineStore } from 'pinia'
-import type { Folder } from '@/types/folder'
+import type { Folder, File } from '@/types/folder'
+
+interface FolderState {
+  folderTree: Folder[]
+  currentFolders: Folder[]
+  currentFiles: File[]
+  selectedFolderId: number | null
+  loading: boolean
+  error: string | null
+}
 
 export const useFoldersStore = defineStore('folders', {
-  state: () => ({
-    folderTree: [] as Folder[],
-    currentFolderContent: [] as Folder[],
-    selectedFolderId: null as number | null,
+  state: (): FolderState => ({
+    folderTree: [],
+    currentFolders: [],
+    currentFiles: [],
+    selectedFolderId: null,
     loading: false,
-    error: null as string | null,
+    error: null,
   }),
 
   actions: {
@@ -24,12 +34,28 @@ export const useFoldersStore = defineStore('folders', {
       }
     },
 
+    getCurrentPath(folderId: number): string {
+      const findPath = (folders: Folder[], id: number): string => {
+        for (const folder of folders) {
+          if (folder.id === id) return folder.path
+          if (folder.children) {
+            const childPath = findPath(folder.children, id)
+            if (childPath) return childPath
+          }
+        }
+        return ''
+      }
+
+      return findPath(this.folderTree, folderId)
+    },
+
     async fetchFolderContent(folderId: number) {
       this.loading = true
       try {
-        const response = await fetch(`http://localhost:3000/api/v1/folders/${folderId}/children`)
+        const response = await fetch(`http://localhost:3000/api/v1/folders/${folderId}/content`)
         const data = await response.json()
-        this.currentFolderContent = data.data
+        this.currentFolders = data.data.folders
+        this.currentFiles = data.data.files
         this.selectedFolderId = folderId
       } catch (error) {
         this.error = 'Failed to fetch folder content'
@@ -38,4 +64,4 @@ export const useFoldersStore = defineStore('folders', {
       }
     },
   },
-});
+})
