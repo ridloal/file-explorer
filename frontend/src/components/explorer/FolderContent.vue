@@ -1,61 +1,48 @@
 <template>
-  <div class="folder-tree">
+  <div class="folder-content">
     <div v-if="loading">
       <LoadingSpinner />
     </div>
     <template v-else>
-      <div v-for="folder in folderTree" :key="folder.id" class="folder-tree-item">
+      <div class="folder-grid">
         <FolderItem
+          v-for="folder in currentFolderContent"
+          :key="folder.id"
           :folder="folder"
           :is-selected="selectedFolderId === folder.id"
           @select="handleSelect"
         />
-        <div v-if="folder.children?.length" class="folder-children">
-          <FolderItem
-            v-for="child in folder.children"
-            :key="child.id"
-            :folder="child"
-            :is-selected="selectedFolderId === child.id"
-            @select="handleSelect"
-          />
-        </div>
       </div>
     </template>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useFoldersStore } from '@/stores/folders'
 import FolderItem from './FolderItem.vue'
 import LoadingSpinner from '../shared/LoadingSpinner.vue'
 
 const store = useFoldersStore()
-const { folderTree, loading, selectedFolderId } = storeToRefs(store)
+const { currentFolderContent, loading, selectedFolderId } = storeToRefs(store)
 
 const handleSelect = (folderId: number) => {
   store.fetchFolderContent(folderId)
 }
-
-onMounted(() => {
-  store.fetchFolderTree()
-})
 </script>
 
 <style scoped>
-.folder-tree {
+.folder-content {
   height: 100%;
   padding: 16px;
-  border-right: 1px solid #e0e0e0;
+  background-color: #ffffff;
   overflow-y: auto;
 }
 
-.folder-tree-item {
-  margin-bottom: 4px;
-}
-
-.folder-children {
-  margin-left: 20px;
+.folder-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 16px;
+  padding: 16px;
 }
 </style>
