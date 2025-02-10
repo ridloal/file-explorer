@@ -16,5 +16,12 @@
     "drizzle-orm": "^0.39.2",
     "elysia": "^1.2.12",
     "pg": "^8.13.1"
+  },
+  "scripts": {
+    "dev": "bun --watch src/index.ts",
+    "build": "bun build src/index.ts",
+    "start": "bun src/index.ts",
+    "db:generate": "drizzle-kit generate:pg",
+    "db:migrate": "bun src/infrastructure/database/migrate.ts"
   }
 }
