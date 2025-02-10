@@ -3,7 +3,7 @@ import { pgTable, serial, varchar, integer, timestamp, text } from 'drizzle-orm/
 export const folders = pgTable('folders', {
   id: serial('id').primaryKey(),
   name: varchar('name', { length: 255 }).notNull(),
-  parentId: integer('parent_id').references(() => folders.id),
+  parentId: integer('parent_id').references((): any => folders.id),
   path: text('path').notNull(),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow()
