@@ -36,4 +36,26 @@ export class FolderController {
       };
     }
   }
+
+  async getFolderContent(context: Context) {
+    try {
+      const folderId = Number(context.params.id);
+      const { folders, files } = await this.folderUseCase.getFolderContent(folderId);
+      
+      return {
+        status: 'success',
+        data: {
+          folders,
+          files
+        }
+      };
+    } catch (error) {
+      context.set.status = 500;
+      return {
+        status: 'error',
+        message: 'Failed to fetch folder content'
+      };
+    }
+  }
 }
+

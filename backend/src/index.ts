@@ -1,6 +1,7 @@
 import { Elysia } from 'elysia';
 import { cors } from '@elysiajs/cors';
 import { DrizzleFolderRepository } from './infrastructure/database/repositories/folder.repository';
+import { DrizzleFileRepository } from './infrastructure/database/repositories/files.repository';
 import { FolderUseCase } from './core/usecases/folder.usecase';
 import { FolderController } from './interfaces/controllers/folder.controller';
 import { setupFolderRoutes } from './interfaces/routes/folder.routes';
@@ -12,7 +13,8 @@ app.use(cors());
 
 // Setup dependencies
 const folderRepository = new DrizzleFolderRepository();
-const folderUseCase = new FolderUseCase(folderRepository);
+const fileRepository = new DrizzleFileRepository();
+const folderUseCase = new FolderUseCase(folderRepository, fileRepository);
 const folderController = new FolderController(folderUseCase);
 
 // Setup routes

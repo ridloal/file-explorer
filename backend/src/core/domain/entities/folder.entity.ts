@@ -10,3 +10,17 @@ export interface Folder {
 export interface FolderTree extends Folder {
     children: FolderTree[];
 }
+
+export interface File {
+    id: number;
+    name: string;
+    folderId: number;
+    size: number;
+    mimeType: string;
+    createdAt: Date;
+    updatedAt: Date;
+  }
+  
+  export interface FolderWithFiles extends Folder {
+    files?: File[];
+  }
