@@ -1,6 +1,9 @@
 <template>
   <div class="folder-content">
-    <div class="folder-path">{{ currentPath }}</div>
+    <div class="folder-path">
+      <button v-if="selectedFolderId" class="back-button" @click="handleBack">← Back</button>
+      {{ currentPath }}
+    </div>
     <div v-if="loading">
       <LoadingSpinner />
     </div>
@@ -35,6 +38,12 @@ const currentPath = computed(() =>
 const handleSelect = (folderId: number) => {
   store.fetchFolderContent(folderId)
 }
+
+const handleBack = async () => {
+  if (store.selectedFolder?.parentId) {
+    await store.fetchFolderContent(store.selectedFolder.parentId)
+  }
+}
 </script>
 
 <style scoped>
@@ -52,8 +61,21 @@ const handleSelect = (folderId: number) => {
 
 .folder-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 16px;
   padding: 16px;
+}
+
+.back-button {
+  padding: 4px 8px;
+  margin-right: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+}
+
+.back-button:hover {
+  background: #f5f5f5;
 }
 </style>

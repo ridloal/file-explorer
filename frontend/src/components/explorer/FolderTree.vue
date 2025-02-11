@@ -4,21 +4,13 @@
       <LoadingSpinner />
     </div>
     <template v-else>
-      <div v-for="folder in folderTree" :key="folder.id" class="folder-tree-item">
-        <FolderItem
+      <div v-for="folder in folderTree" :key="folder.id">
+        <FolderTreeItem
           :folder="folder"
-          :is-selected="selectedFolderId === folder.id"
+          :level="0"
+          :selected-id="selectedFolderId"
           @select="handleSelect"
         />
-        <div v-if="folder.children?.length" class="folder-children">
-          <FolderItem
-            v-for="child in folder.children"
-            :key="child.id"
-            :folder="child"
-            :is-selected="selectedFolderId === child.id"
-            @select="handleSelect"
-          />
-        </div>
       </div>
     </template>
   </div>
@@ -28,7 +20,7 @@
 import { onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useFoldersStore } from '@/stores/folders'
-import FolderItem from './FolderItem.vue'
+import FolderTreeItem from './FolderTreeItem.vue'
 import LoadingSpinner from '../shared/LoadingSpinner.vue'
 
 const store = useFoldersStore()

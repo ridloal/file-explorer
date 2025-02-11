@@ -8,6 +8,7 @@ interface FolderState {
   selectedFolderId: number | null
   loading: boolean
   error: string | null
+  selectedFolder: Folder | null
 }
 
 export const useFoldersStore = defineStore('folders', {
@@ -16,6 +17,7 @@ export const useFoldersStore = defineStore('folders', {
     currentFolders: [],
     currentFiles: [],
     selectedFolderId: null,
+    selectedFolder: null,
     loading: false,
     error: null,
   }),
@@ -34,19 +36,20 @@ export const useFoldersStore = defineStore('folders', {
       }
     },
 
-    getCurrentPath(folderId: number): string {
-      const findPath = (folders: Folder[], id: number): string => {
-        for (const folder of folders) {
-          if (folder.id === id) return folder.path
-          if (folder.children) {
-            const childPath = findPath(folder.children, id)
-            if (childPath) return childPath
-          }
+    findFolderInTree(folderId: number, tree: Folder[] = this.folderTree): Folder | null {
+      for (const folder of tree) {
+        if (folder.id === folderId) return folder
+        if (folder.children) {
+          const found = this.findFolderInTree(folderId, folder.children)
+          if (found) return found
         }
-        return ''
       }
+      return null
+    },
 
-      return findPath(this.folderTree, folderId)
+    getCurrentPath(folderId: number): string {
+      const folder = this.findFolderInTree(folderId)
+      return folder?.path || ''
     },
 
     async fetchFolderContent(folderId: number) {
@@ -57,6 +60,7 @@ export const useFoldersStore = defineStore('folders', {
         this.currentFolders = data.data.folders
         this.currentFiles = data.data.files
         this.selectedFolderId = folderId
+        this.selectedFolder = this.findFolderInTree(folderId)
       } catch (error) {
         this.error = 'Failed to fetch folder content'
       } finally {
