@@ -1,28 +1,32 @@
 <template>
-  <div class="folder-tree-item" :style="{ paddingLeft: `${level * 20}px` }">
-    <div
-      class="folder-content"
-      :class="{ selected: selectedId === folder.id }"
-      @click="handleClick"
-    >
-      <span class="toggle" v-if="hasChildren" @click.stop="toggleExpand">
-        {{ isExpanded ? '▼' : '▶' }}
-      </span>
-      <span class="folder-icon">📁</span>
-      <span class="folder-name">{{ folder.name }}</span>
+    <div class="folder-tree-item">
+      <div 
+        class="folder-content"
+        :class="{ selected: selectedId === folder.id }"
+        :style="{ '--indent-level': level }"
+        @click="handleClick"
+      >
+        <div class="folder-grid">
+          <span v-if="hasChildren" class="toggle" @click.stop="toggleExpand">
+            {{ isExpanded ? '▼' : '▶' }}
+          </span>
+          <span v-else class="spacer"></span>
+          <span class="folder-icon">📁</span>
+          <span class="folder-name">{{ folder.name }}</span>
+        </div>
+      </div>
+      <div v-if="isExpanded && hasChildren" class="children">
+        <FolderTreeItem
+          v-for="child in folder.children"
+          :key="child.id"
+          :folder="child"
+          :level="level + 1"
+          :selected-id="selectedId"
+          @select="$emit('select', $event)"
+        />
+      </div>
     </div>
-    <div v-if="isExpanded && hasChildren" class="children">
-      <FolderTreeItem
-        v-for="child in folder.children"
-        :key="child.id"
-        :folder="child"
-        :level="level + 1"
-        :selected-id="selectedId"
-        @select="$emit('select', $event)"
-      />
-    </div>
-  </div>
-</template>
+  </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
@@ -72,14 +76,6 @@ const toggleExpand = () => {
   user-select: none;
 }
 
-.folder-content {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 8px;
-  cursor: pointer;
-}
-
 .folder-content:hover {
   background-color: #f5f5f5;
 }
@@ -88,12 +84,28 @@ const toggleExpand = () => {
   background-color: #e3f2fd;
 }
 
+.children {
+  margin-left: 4px;
+}
+
+.folder-content {
+  padding: 4px;
+  cursor: pointer;
+  margin-left: calc(var(--indent-level) * 20px);
+}
+
+.folder-grid {
+  display: grid;
+  grid-template-columns: 20px 24px 1fr;
+  align-items: center;
+  gap: 4px;
+}
+
 .toggle {
-  width: 20px;
   cursor: pointer;
 }
 
-.children {
-  margin-left: 4px;
+.spacer {
+  width: 20px;
 }
 </style>

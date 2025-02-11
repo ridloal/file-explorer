@@ -10,8 +10,8 @@
 </template>
 
 <script setup lang="ts">
-import FolderTree from '@/components/explorer/FolderTree.vue'
-import FolderContent from '@/components/explorer/FolderContent.vue'
+import FolderTree from '@/components/explorer/FolderTree.vue';
+import FolderContent from '@/components/explorer/FolderContent.vue';
 </script>
 
 <style scoped>
